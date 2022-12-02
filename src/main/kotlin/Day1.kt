@@ -1,14 +1,8 @@
 import java.io.BufferedReader
 import java.io.InputStreamReader
-import java.lang.StringBuilder
-import java.util.function.BiConsumer
-import java.util.function.Consumer
 import java.util.function.Predicate
-import java.util.stream.Collectors
-import java.util.stream.Stream
-import kotlin.streams.toList
 
-class Main {
+class Day1 {
 
     companion object {
         @JvmStatic
@@ -23,12 +17,6 @@ class Main {
                 .map { list -> list.sumOf(String::toInt) }.sortedDescending()
                 .slice(0..2)
                 .sum()
-
-            val max2 = lines.stream()
-                .map { if(it == "") "#" else it }
-                .collect(Collectors.joining("|"))
-                .split("|#|")
-                .maxOfOrNull { s -> s.split("|").sumOf(String::toInt)}
 
             println(max)
             println(top3)
@@ -58,6 +46,4 @@ class Main {
             return mutableListOf<T>().also { it.addAll(this) }
         }
     }
-
-
 }

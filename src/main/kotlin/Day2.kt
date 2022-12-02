@@ -1,7 +1,7 @@
 import java.io.BufferedReader
 import java.io.InputStreamReader
-import java.util.function.BiFunction
 import java.util.function.Function
+import java.util.function.Supplier
 
 class Day2 {
     companion object {
@@ -24,18 +24,14 @@ class Day2 {
             val scoreP2 = lines.map { line -> Pair(rpsMap[line[0]]!!, conditionMap[line[2]]!!) }
                 .sumOf { (them, condition) -> condition.calculate(them).fight(them) }
 
-            println(totalScore);
-
-            println(scoreP2);
-
+            println(totalScore)
+            println(scoreP2)
         }
 
-        enum class RPS(private val baseScore: Int) {
-            ROCK(1) { override fun beats(): RPS = SCISSORS },
-            PAPER(2) { override fun beats(): RPS = ROCK },
-            SCISSORS(3) { override fun beats(): RPS = PAPER };
-
-            abstract fun beats(): RPS
+        enum class RPS(private val baseScore: Int, private val beats: Supplier<RPS>) {
+            ROCK(1, { SCISSORS }),
+            PAPER(2, { ROCK }),
+            SCISSORS(3, { PAPER });
 
             fun fight(rps: RPS): Int = let {
                 when (rps) {
@@ -44,14 +40,16 @@ class Day2 {
                     else -> 0//loss
                 }
             }.plus(this.baseScore)
+
+            fun beats(): RPS = beats.get()
         }
 
-        enum class Condition {
-            WIN { override fun calculate(them: RPS): RPS = them.beats().beats() },
-            LOSE { override fun calculate(them: RPS): RPS = them.beats()},
-            DRAW { override fun calculate(them: RPS): RPS = them};
+        enum class Condition(private val calculate: Function<RPS, RPS>) {
+            WIN({ it.beats().beats() }),
+            LOSE({ it.beats() }),
+            DRAW({ it });
 
-            abstract fun calculate(them: RPS): RPS
+            fun calculate(them: RPS): RPS = calculate.apply(them)
         }
     }
 }
