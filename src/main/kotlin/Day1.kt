@@ -1,5 +1,3 @@
-import java.io.BufferedReader
-import java.io.InputStreamReader
 import java.util.function.Predicate
 
 class Day1 {
@@ -8,8 +6,7 @@ class Day1 {
         @JvmStatic
         fun main(args: Array<String>) {
 
-            val inputStream = Thread.currentThread().contextClassLoader.getResourceAsStream(args[0]) ?: return
-            val lines = BufferedReader(InputStreamReader(inputStream)).lines().toList()
+            val lines = readAsStream(args[0])!!.toList()
 
             val max = lines.splitBy { it.equals("") }.maxOfOrNull { list -> list.sumOf { it.toInt() } }
 
