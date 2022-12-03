@@ -4,18 +4,15 @@ class Day1 {
 
     companion object {
         @JvmStatic
-        fun main(args: Array<String>) {
+        fun main(args: Array<String>) = result(readAsStream(args[0])!!.toList()).run(::println)
 
-            val lines = readAsStream(args[0])!!.toList()
+        private fun result(input: List<String>): Results = Results().apply {
+            part1 = input.splitBy { it == "" }.maxOfOrNull { list -> list.sumOf { it.toInt() } }
 
-            val part1 = lines.splitBy { it.equals("") }.maxOfOrNull { list -> list.sumOf { it.toInt() } }
-
-            val part2 = lines.splitBy { it.equals("") }
+            part2 = input.splitBy { it == "" }
                 .map { list -> list.sumOf(String::toInt) }.sortedDescending()
                 .slice(0..2)
                 .sum()
-
-            Results(part1, part2).also { println(it) }
         }
 
         /*

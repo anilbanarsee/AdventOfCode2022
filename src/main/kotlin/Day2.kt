@@ -1,48 +1,56 @@
+import java.lang.IllegalArgumentException
+
 class Day2 {
     companion object {
         @JvmStatic
-        fun main(args: Array<String>) {
-            val lines = readAsStream(args[0])!!.toList()
+        fun main(args: Array<String>) = result(readAsStream(args[0])!!.toList()).run(::println)
 
-            val rpsMap = mapOf(
-                Pair('A', RPS.ROCK), Pair('X', RPS.ROCK),
-                Pair('B', RPS.PAPER), Pair('Y', RPS.PAPER),
-                Pair('C', RPS.SCISSORS), Pair('Z', RPS.SCISSORS)
-            )
+        private fun result(input: List<String>): Results = Results().apply {
+            part1 = input.map { line -> Pair(line[0].toRPS(), line[2].toRPS()) }
+                .sumOf { (them, us) -> calculateScore(us, them) }
 
-            val conditionMap = mapOf(Pair('X', Condition.LOSE), Pair('Y', Condition.DRAW), Pair('Z', Condition.WIN))
-
-            val part1 = lines.map { line -> Pair(rpsMap[line[0]]!!, rpsMap[line[2]]!!) }
-                .sumOf { (them, us) -> us.fight(them) }
-
-            val part2 = lines.map { line -> Pair(rpsMap[line[0]]!!, conditionMap[line[2]]!!) }
-                .sumOf { (them, condition) -> condition.calculate(them).fight(them) }
-
-            Results(part1, part2).also { println(it) }
+            part2 = input.map { line -> Pair(line[0].toRPS(), line[2].toCondition()) }
+                .sumOf { (them, condition) -> calculateScore(condition.calculate(them), them) }
         }
 
-        enum class RPS(private val baseScore: Int, private val beats: () -> RPS) {
+        private fun calculateScore(us: RPS, them: RPS): Int = us.run { fight(them).score + baseScore }
+
+        enum class RPS(val baseScore: Int, private val beats: () -> RPS) {
             ROCK(1, { SCISSORS }),
             PAPER(2, { ROCK }),
             SCISSORS(3, { PAPER });
 
-            fun fight(rps: RPS): Int = let {
+            fun fight(rps: RPS): Condition = let {
                 when (rps) {
-                    this -> 3//draw
-                    this.beats() -> 6//win
-                    else -> 0//loss
+                    this -> Condition.DRAW
+                    this.beats() -> Condition.WIN
+                    else -> Condition.LOSE
                 }
-            }.plus(this.baseScore)
+            }
 
             fun beats(): RPS = beats.invoke()
         }
 
-        enum class Condition(private val calculate: (RPS) -> RPS) {
-            WIN({ it.beats().beats() }),
-            LOSE({ it.beats() }),
-            DRAW({ it });
+        enum class Condition(val score: Int, private val calculate: (RPS) -> RPS) {
+            WIN(6, { it.beats().beats() }),
+            LOSE(0, { it.beats() }),
+            DRAW(3, { it });
 
             fun calculate(them: RPS): RPS = calculate.invoke(them)
+        }
+
+        private fun Char.toRPS(): RPS = when (this) {
+            'X', 'A' -> RPS.ROCK
+            'B', 'Y' -> RPS.PAPER
+            'C', 'Z' -> RPS.SCISSORS
+            else -> throw IllegalArgumentException()
+        }
+
+        private fun Char.toCondition(): Condition = when (this) {
+            'X' -> Condition.LOSE
+            'Y' -> Condition.DRAW
+            'Z' -> Condition.WIN
+            else -> throw IllegalArgumentException()
         }
     }
 }

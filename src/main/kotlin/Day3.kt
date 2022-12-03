@@ -1,18 +1,16 @@
 class Day3 {
     companion object {
         @JvmStatic
-        fun main(args: Array<String>) {
-            val lines = readAsStream(args[0])!!.toList()
+        fun main(args: Array<String>) = result(readAsStream(args[0])!!.toList()).run(::println)
 
-            val part1 = lines.map { it.half().toList() }
+        private fun result(input: List<String>): Results = Results().apply {
+            part1 = input.map { it.half().toList() }
                 .flatMap { it.map { str -> str.toCharArray().toSet() }.getMatchingElements() }
                 .sumOf { it.asInt() }
 
-            val part2 = lines.chunked(3)
+           part2 = input.chunked(3)
                 .flatMap { it.map { str -> str.toCharArray().toSet() }.getMatchingElements() }
                 .sumOf { it.asInt() }
-
-            Results(part1, part2).also { println(it) }
         }
 
         private fun <T> Iterable<Set<T>>.getMatchingElements(): Iterable<T> =

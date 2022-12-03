@@ -12,4 +12,4 @@ fun readAsStream(resourceName: String): Stream<String>? {
 
 const val ALPHABET = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
-data class Results(val part1: Any?, val part2: Any?)
+data class Results(var part1: Any? = null, var part2: Any? = null)
