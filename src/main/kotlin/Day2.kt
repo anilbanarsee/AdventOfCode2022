@@ -1,6 +1,3 @@
-import java.util.function.Function
-import java.util.function.Supplier
-
 class Day2 {
     companion object {
         @JvmStatic
@@ -25,7 +22,7 @@ class Day2 {
             println(scoreP2)
         }
 
-        enum class RPS(private val baseScore: Int, private val beats: Supplier<RPS>) {
+        enum class RPS(private val baseScore: Int, private val beats: () -> RPS) {
             ROCK(1, { SCISSORS }),
             PAPER(2, { ROCK }),
             SCISSORS(3, { PAPER });
@@ -38,15 +35,15 @@ class Day2 {
                 }
             }.plus(this.baseScore)
 
-            fun beats(): RPS = beats.get()
+            fun beats(): RPS = beats.invoke()
         }
 
-        enum class Condition(private val calculate: Function<RPS, RPS>) {
+        enum class Condition(private val calculate: (RPS) -> RPS) {
             WIN({ it.beats().beats() }),
             LOSE({ it.beats() }),
             DRAW({ it });
 
-            fun calculate(them: RPS): RPS = calculate.apply(them)
+            fun calculate(them: RPS): RPS = calculate.invoke(them)
         }
     }
 }
