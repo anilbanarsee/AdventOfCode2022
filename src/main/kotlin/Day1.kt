@@ -8,15 +8,14 @@ class Day1 {
 
             val lines = readAsStream(args[0])!!.toList()
 
-            val max = lines.splitBy { it.equals("") }.maxOfOrNull { list -> list.sumOf { it.toInt() } }
+            val part1 = lines.splitBy { it.equals("") }.maxOfOrNull { list -> list.sumOf { it.toInt() } }
 
-            val top3 = lines.splitBy { it.equals("") }
+            val part2 = lines.splitBy { it.equals("") }
                 .map { list -> list.sumOf(String::toInt) }.sortedDescending()
                 .slice(0..2)
                 .sum()
 
-            println(max)
-            println(top3)
+            Results(part1, part2).also { println(it) }
         }
 
         /*

@@ -12,14 +12,13 @@ class Day2 {
 
             val conditionMap = mapOf(Pair('X', Condition.LOSE), Pair('Y', Condition.DRAW), Pair('Z', Condition.WIN))
 
-            val totalScore = lines.map { line -> Pair(rpsMap[line[0]]!!, rpsMap[line[2]]!!) }
+            val part1 = lines.map { line -> Pair(rpsMap[line[0]]!!, rpsMap[line[2]]!!) }
                 .sumOf { (them, us) -> us.fight(them) }
 
-            val scoreP2 = lines.map { line -> Pair(rpsMap[line[0]]!!, conditionMap[line[2]]!!) }
+            val part2 = lines.map { line -> Pair(rpsMap[line[0]]!!, conditionMap[line[2]]!!) }
                 .sumOf { (them, condition) -> condition.calculate(them).fight(them) }
 
-            println(totalScore)
-            println(scoreP2)
+            Results(part1, part2).also { println(it) }
         }
 
         enum class RPS(private val baseScore: Int, private val beats: () -> RPS) {

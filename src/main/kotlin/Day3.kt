@@ -12,8 +12,7 @@ class Day3 {
                 .flatMap { it.map { str -> str.toCharArray().toSet() }.getMatchingElements() }
                 .sumOf { it.asInt() }
 
-            println(part1)
-            println(part2)
+            Results(part1, part2).also { println(it) }
         }
 
         private fun <T> Iterable<Iterable<T>>.getMatchingElements(): Iterable<T> =
