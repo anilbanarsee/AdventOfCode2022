@@ -16,8 +16,7 @@ class Day3 {
         private fun <T> Iterable<Set<T>>.getMatchingElements(): Iterable<T> =
             this.reduce { item, next -> item.filter { next.contains(it) }.toSet() }
 
-        private fun String.half(): Pair<String, String> =
-            this.slice(0 until this.length / 2) to this.slice(this.length / 2 until this.length)
+        private fun String.half(): Pair<String, String> = this.take(this.length / 2) to this.drop(this.length / 2)
 
         private fun Char.asInt(): Int = ALPHABET.toCharArray().indexOf(this).plus(1)
     }
