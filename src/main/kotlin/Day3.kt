@@ -15,7 +15,7 @@ class Day3 {
             Results(part1, part2).also { println(it) }
         }
 
-        private fun <T> Iterable<Iterable<T>>.getMatchingElements(): Iterable<T> =
+        private fun <T> Iterable<Set<T>>.getMatchingElements(): Iterable<T> =
             this.reduce { item, next -> item.filter { next.contains(it) }.toSet() }
 
         private fun String.half(): Pair<String, String> =
