@@ -7,7 +7,7 @@ class Day4 {
 
         private fun result(input: List<String>): Results = Results().apply {
             val sections = input.map { line -> line.pairOf(",") { it.pairOf("-", String::toInt).asRange() } }
-            // more efficient bool but ugly (a.first > b.first != a.last > b.last) || a.first == b.first || a.last == b.last
+            // an implementation of range.superset could be: (a.first > b.first != a.last > b.last) || a.first == b.first || a.last == b.last
             part1 = sections.count { (a, b) -> a.union(b).count() == max(a.count(), b.count()) }
             part2 = sections.count { (a, b) -> a.intersect(b).isNotEmpty() }
         }
