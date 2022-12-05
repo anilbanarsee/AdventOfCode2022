@@ -1,4 +1,3 @@
-import java.util.regex.Matcher
 import java.util.regex.Pattern
 
 typealias Table<T> = List<List<T>>
@@ -25,10 +24,10 @@ class Day5 {
 
 data class Command(val move: Int = 0, val from: Int, val to: Int) {
     companion object {
-        private val PATTERN: Pattern = Pattern.compile("(move ([^ ]*))|(from ([^ ]*))|(to ([^ \\n]*))")
+        private val PATTERN: Pattern = Pattern.compile("move ([^ ]*) from ([^ ]*) to ([^ \\n]*)")
 
-        fun parse(string: String): Command = PATTERN.matcher(string)
-            .let { Command(it.findGroup(2)!!.toInt(), it.findGroup(4)!!.toInt()-1, it.findGroup(6)!!.toInt()-1) }
+        fun parse(string: String): Command = PATTERN.matcher(string).apply { find() }
+            .let { Command(it.group(1)!!.toInt(), it.group(2)!!.toInt()-1, it.group(3)!!.toInt()-1) }
     }
 
     fun <T> actPart1(crates: MutableTable<T>) = crates.apply {
@@ -56,5 +55,3 @@ private fun <T> Table<T>.fill(x: Int, y: Int): Table<T?> = List(x) { i -> List(y
 private fun <T> Table<T?>.clean(): Table<T> = List(this.size) { i -> this[i].filterNotNull() }
 
 private fun <T> Table<T>.toMutableTable(): MutableTable<T> = this.map { it.toMutableList() }.toMutableList()
-
-private fun Matcher.findGroup(group: Int): String? = when(this.find()) { true -> this.group(group); false -> null }
