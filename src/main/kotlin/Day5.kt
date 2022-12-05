@@ -27,7 +27,7 @@ data class Command(val move: Int = 0, val from: Int, val to: Int) {
         private val PATTERN: Pattern = Pattern.compile("move ([^ ]*) from ([^ ]*) to ([^ \\n]*)")
 
         fun parse(string: String): Command = PATTERN.matcher(string).apply { find() }
-            .let { Command(it.group(1)!!.toInt(), it.group(2)!!.toInt()-1, it.group(3)!!.toInt()-1) }
+            .let { Command(it.group(1).toInt(), it.group(2).toInt()-1, it.group(3).toInt()-1) }
     }
 
     fun <T> actPart1(crates: MutableTable<T>) = crates.apply {
