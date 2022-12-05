@@ -22,7 +22,7 @@ class Day5 {
     }
 }
 
-data class Command(var move: Int = 0, val from: Int, val to: Int) {
+data class Command(var move: Int = 1, val from: Int, val to: Int) {
     companion object {
         private val PATTERN: Pattern = Pattern.compile("move( [^ ]*) from ([^ ]+) to ([^ \\n]+)")
 
