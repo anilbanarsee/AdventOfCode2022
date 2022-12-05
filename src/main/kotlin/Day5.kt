@@ -24,11 +24,11 @@ class Day5 {
 
 data class Command(var move: Int = 1, val from: Int, val to: Int) {
     companion object {
-        private val PATTERN: Pattern = Pattern.compile("move( [^ ]*) from ([^ ]+) to ([^ \\n]+)")
+        private val PATTERN: Pattern = Pattern.compile("move( ([^ ]*)) from ([^ ]+) to ([^ \\n]+)")
 
         fun parse(string: String): Command = PATTERN.matcher(string).apply { find() }
-            .run { Command( from =group(2).toInt()-1, to = group(3).toInt()-1 )
-                .apply{ group(1)?.let { move = it.drop(1).toInt() } } }
+            .run { Command( from =group(3).toInt()-1, to = group(4).toInt()-1 )
+                .apply{ group(2)?.let { move = it.toInt() } } }
     }
 
     fun <T> actPart1(crates: MutableTable<T>) = crates.apply {
