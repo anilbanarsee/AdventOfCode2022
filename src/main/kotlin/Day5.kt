@@ -14,7 +14,7 @@ class Day5 {
                 .run{ fill(this.size, this.last().size) }.transpose() // transpose into columns
                 .map { char -> char.filter { it != ' ' } }.clean() //remove nulls
 
-            val commands = input.splitOn { it == "" }.second.map { Command.parse(it) }
+            val commands = input.splitOn { it == "" }.second.map { CraneCommand.parse(it) }
 
             part1 = commands.fold(startCrates.toMutableTable()) { crates, command -> command.actPart1(crates) }.map { it[0] }.joinToString("")
             part2 = commands.fold(startCrates.toMutableTable()) { crates, command -> command.actPart2(crates) }.map { it[0] }.joinToString("")
@@ -22,12 +22,12 @@ class Day5 {
     }
 }
 
-data class Command(var move: Int = 1, val from: Int, val to: Int) {
+data class CraneCommand(var move: Int = 1, val from: Int, val to: Int) {
     companion object {
         private val PATTERN: Pattern = Pattern.compile("move (([^ ]*) *)from ([^ ]+) to ([^ \\n]+)")
 
-        fun parse(string: String): Command = PATTERN.matcher(string).apply { find() }
-            .run { Command( from = group(3).toInt()-1, to = group(4).toInt()-1 )
+        fun parse(string: String): CraneCommand = PATTERN.matcher(string).apply { find() }
+            .run { CraneCommand( from = group(3).toInt()-1, to = group(4).toInt()-1 )
                 .apply{ group(2)?.let { move = it.toInt() } } }
     }
 
