@@ -1,5 +1,3 @@
-import java.lang.NumberFormatException
-
 class Day7 {
     companion object {
         @JvmStatic
@@ -14,6 +12,7 @@ class Day7 {
             part1 = head.dirs().map { it.size() }.filter { it < 100000 }.sum() // get sizes of dirs and sum <100000
             part2 = (head.size() + 30000000 - 70000000)
                 .let { required -> head.dirs().map { it.size() }.filter { it > required } }.min()
+
         }
     }
 }
