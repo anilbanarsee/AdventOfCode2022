@@ -48,7 +48,7 @@ private fun CharArray.takeEvery(step: Int, start: Int) =
 private fun <T> Iterable<T>.splitOn(predicate: (T) -> Boolean): Pair<Iterable<T>, Iterable<T>> =
     this.indexOfFirst(predicate).let { this.take(it) to this.drop(it+1) }
 
-private fun <T> Table<T>.transpose(): Table<T> = List(this[0].size) { i -> List(this.size) { j -> this[j][i] } }
+fun <T> Table<T>.transpose(): Table<T> = List(this[0].size) { i -> List(this.size) { j -> this[j][i] } }
 
 // fills out a table into a nullable table of size x/y, it is important for the contract of transpose that the table is filled
 private fun <T> Table<T>.fill(x: Int, y: Int): Table<T?> = List(x) { i -> List(y) { j -> this.getOrNull(i)?.getOrNull(j)} }
