@@ -17,11 +17,11 @@ private fun result(input: List<String>): Results = Results().apply {
         chunked.fold(list){ l, str -> l.apply { add(str.toModMonkey(list, mod)) } }
     }
 
-    (1 .. 20).fold(mutableListOf(intMonkeys.map { it.items })) { table, d ->
+    (1 .. 20).fold(mutableListOf(intMonkeys.map { it.items })) { table, _ ->
             table.apply { add(intMonkeys.onEach { it.act() }.map { it.items }) }
         }
 
-    (1..10000).fold(mutableListOf(modMonkeys.map { it.items })) { table, d ->
+    (1..10000).fold(mutableListOf(modMonkeys.map { it.items })) { table, _ ->
             table.apply { add(modMonkeys.onEach { it.act() }.map { it.items }) }
         }
 
