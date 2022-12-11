@@ -64,6 +64,17 @@ data class Monkey<T>(
     override fun toString(): String = items.toString()
 }
 
+private fun <T> monkeyThrower(predicate: (T) -> Boolean, t: Int, f: Int): (Monkey<T>) -> Unit =
+    { monkey ->
+        val item = monkey.items[0]
+        when (predicate.invoke(item)) {
+            true -> monkey.monkeys[t].apply { items = items.toMutableList().apply { add(item) } }
+            false -> monkey.monkeys[f].apply { items = items.toMutableList().apply { add(item) } }
+        }
+        monkey.items = monkey.items.drop(1)
+        monkey.inspected++
+    }
+
 private fun String.toModMonkey(monkeys: List<Monkey<ModAwareInt>>, mod: Int) =
     this.toGroups(PATTERN).let { groups ->
         Monkey(
@@ -88,21 +99,19 @@ private fun String.toIntMonkey(monkeys: List<Monkey<Int>>) =
         )
     }
 
-fun List<BigInteger>.product(): BigInteger = this.fold(BigInteger.ONE) { a, b -> a * b }
-fun List<Int>.product(): Int = this.fold(1) { a, b -> a * b }
+data class ModAwareInt(val value: BigInteger, val mod: BigInteger) {
 
-fun String.toGroups(p: Pattern) =
-    p.matcher(this).let { m -> m.find(); (1..m.groupCount()).map { m.group(it) } }
+    operator fun plus(other: BigInteger) = ModAwareInt((value + other) % mod, mod)
+    operator fun plus(other: ModAwareInt) = ModAwareInt((value + other.value) % mod, mod)
 
-private fun <T> emptyMutableTable() = mutableListOf(mutableListOf<T>())
+    operator fun minus(other: BigInteger) = ModAwareInt((value - other) % mod, mod)
+    operator fun minus(other: ModAwareInt) = ModAwareInt((value - other.value) % mod, mod)
 
-fun <T> Iterable<T>.chunkBy(predicate: (T) -> Boolean): List<List<T>> =
-    this.fold(emptyMutableTable()) { list, item ->
-        when (predicate.invoke(item)) {
-            true -> list.apply { add(mutableListOf()) }
-            false -> list.apply { last().add(item) }
-        }
-    }
+    operator fun times(other: BigInteger) = ModAwareInt((value * other) % mod, mod)
+    operator fun times(other: ModAwareInt) = ModAwareInt((value * other.value) % mod, mod)
+
+    operator fun rem(mod: BigInteger) = value % mod
+}
 
 fun String.toIntOperator(): (Int) -> Int = this.split(" ").run {
     val left = this[0].toIntOrNull()
@@ -126,27 +135,18 @@ fun String.toModAwareOperator(divProduct: Int): (ModAwareInt) -> ModAwareInt = t
     }
 }
 
-private fun <T> monkeyThrower(predicate: (T) -> Boolean, t: Int, f: Int): (Monkey<T>) -> Unit =
-    { monkey ->
-        val item = monkey.items[0]
+fun List<BigInteger>.product(): BigInteger = this.fold(BigInteger.ONE) { a, b -> a * b }
+fun List<Int>.product(): Int = this.fold(1) { a, b -> a * b }
+
+fun String.toGroups(p: Pattern) =
+    p.matcher(this).let { m -> m.find(); (1..m.groupCount()).map { m.group(it) } }
+
+private fun <T> emptyMutableTable() = mutableListOf(mutableListOf<T>())
+
+fun <T> Iterable<T>.chunkBy(predicate: (T) -> Boolean): List<List<T>> =
+    this.fold(emptyMutableTable()) { list, item ->
         when (predicate.invoke(item)) {
-            true -> monkey.monkeys[t].apply { items = items.toMutableList().apply { add(item) } }
-            false -> monkey.monkeys[f].apply { items = items.toMutableList().apply { add(item) } }
+            true -> list.apply { add(mutableListOf()) }
+            false -> list.apply { last().add(item) }
         }
-        monkey.items = monkey.items.drop(1)
-        monkey.inspected++
     }
-
-data class ModAwareInt(val value: BigInteger, val mod: BigInteger) {
-
-    operator fun plus(other: BigInteger) = ModAwareInt((value + other) % mod, mod)
-    operator fun plus(other: ModAwareInt) = ModAwareInt((value + other.value) % mod, mod)
-
-    operator fun minus(other: BigInteger) = ModAwareInt((value - other) % mod, mod)
-    operator fun minus(other: ModAwareInt) = ModAwareInt((value - other.value) % mod, mod)
-
-    operator fun times(other: BigInteger) = ModAwareInt((value * other) % mod, mod)
-    operator fun times(other: ModAwareInt) = ModAwareInt((value * other.value) % mod, mod)
-
-    operator fun rem(mod: BigInteger) = value % mod
-}
