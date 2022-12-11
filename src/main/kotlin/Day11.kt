@@ -5,7 +5,6 @@ import java.util.regex.Pattern
 
 fun main(args: Array<String>) = result(readAsStream(args[0])!!.toList()).run(::println)
 
-
 private fun result(input: List<String>): Results = Results().apply {
     val chunked = input.chunkBy { it == "" }.map { it.joinToString("\n") }
     val mod = chunked.map { DIV.matcher(it).apply { find() }.group(1).toInt() }.product()
