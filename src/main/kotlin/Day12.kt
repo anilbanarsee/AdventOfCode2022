@@ -98,7 +98,7 @@ fun <T> Matrix<T>.pathToWithStepRule(
             .map { PathNode(this.at(it), it, q, q.getPath().size + q.coord.manhattanTo(it) + it.manhattanTo(end)) }
 
         cardinals.find { it.coord == end }?.let { route ->
-            return route.also { r -> r.getPath().mutableAdd(r).reversed().let{ n ->
+            return route.also { r -> r.getPath().reversed().let{ n ->
                 (n.indices).map { cache[n[it].coord ] = n.dropLast(it) }
             } }.getPath()
         }
