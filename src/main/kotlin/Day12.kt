@@ -6,6 +6,8 @@ private fun result(input: List<String>): Results = Results().apply {
     val grid = Array(input.size) { i -> Array(input[0].length) { j -> input[i][j] } }
     val start = grid.coordOf { it == 'S' }.first()
     val end = grid.coordOf { it == 'E' }.first()
+    val cache = mutableMapOf<Coord, List<PathNode<Int>>>()
+    val noopCache = mutableListOf<Coord>()
 
     part1 = grid.matrixMap { it.toHeight() }
         .pathToWithStepRule(start, end,
@@ -15,7 +17,10 @@ private fun result(input: List<String>): Results = Results().apply {
     part2 = startCandidates.fold(Int.MAX_VALUE) { size, s ->
         val path = grid.matrixMap { it.toHeight() }
             .pathToWithStepRule(s, end,
-                { from, to -> to <= from + 1 }, { it.getPath().size > size })?.size ?: Int.MAX_VALUE
+                { from, to -> to <= from + 1 },
+                { it.getPath().size > size },
+                cache, noopCache)
+            ?.size ?: Int.MAX_VALUE
         when(path < size) {
             true -> path
             else -> size
@@ -69,7 +74,9 @@ fun <T> Matrix<T>.pathToWithStepRule(
     start: Coord,
     end: Coord,
     stepRule: (T, T) -> Boolean,
-    abortCondition: (PathNode<T>) -> Boolean = { _ -> false}
+    abortCondition: (PathNode<T>) -> Boolean = { _ -> false},
+    cache: MutableMap<Coord, List<PathNode<T>>> = mutableMapOf(),
+    noopList: MutableList<Coord> = mutableListOf()
 ): List<PathNode<T>>? {
     val open = mutableListOf(PathNode(this.at(start), start, null, 0))
     val closed = mutableListOf<PathNode<T>>()
@@ -78,14 +85,23 @@ fun <T> Matrix<T>.pathToWithStepRule(
         val q = open.apply { sortBy { it.f } }.removeAt(0)
 
         if(abortCondition(q)){
+            noopList.add(q.coord)
             return null
+        }
+
+        if(cache[q.coord] != null) {
+            return cache[q.coord]
         }
 
         val cardinals = this.getCardinals(q.coord).asSequence()
             .filter { stepRule.invoke(this.at(q.coord), this.at(it)) } // apply step rule
             .map { PathNode(this.at(it), it, q, q.getPath().size + q.coord.manhattanTo(it) + it.manhattanTo(end)) }
 
-        cardinals.find { it.coord == end }?.let { return it.getPath() }
+        cardinals.find { it.coord == end }?.let { route ->
+            return route.also { r -> r.getPath().mutableAdd(r).reversed().let{ n ->
+                (n.indices).map { cache[n[it].coord ] = n.dropLast(it) }
+            } }.getPath()
+        }
 
         cardinals
             .filter { s -> open.filter { it.coord == s.coord }.let { it.isEmpty() || !it.any { t -> t.f <= s.f } } }
@@ -93,6 +109,8 @@ fun <T> Matrix<T>.pathToWithStepRule(
             .forEach { open.add(it) }
         closed.add(0, q)
     }
+
+    noopList.addAll(closed.map { it.coord })
     return null
 }
 
