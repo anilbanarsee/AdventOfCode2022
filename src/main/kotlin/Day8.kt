@@ -41,9 +41,9 @@ fun <T, U> Matrix<T>.matrixMapIndexed(function: (Int, Int, T) -> U): List<List<U
 
 data class Coord(val x: Int = 0, val y: Int = 0)
 
-enum class CardinalTraversal(val traversal: Traversal) {
-    UP({ it.copy(x = it.x, y = it.y + 1) }),
-    DOWN({ it.copy(x = it.x, y = it.y - 1) }),
-    LEFT({ it.copy(x = it.x + 1, y = it.y) }),
-    RIGHT({ it.copy(x = it.x - 1, y = it.y) });
+enum class CardinalTraversal(val traversal: Traversal, private val reverse: () -> CardinalTraversal) {
+    UP({ it.copy(x = it.x, y = it.y + 1) }, {DOWN}),
+    DOWN({ it.copy(x = it.x, y = it.y - 1) }, {UP}),
+    LEFT({ it.copy(x = it.x + 1, y = it.y) }, {RIGHT}),
+    RIGHT({ it.copy(x = it.x - 1, y = it.y) }, {LEFT});
 }
